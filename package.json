@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc && typedoc src/index.ts",
     "lint": "tslint --fix -p .",
-    "test": "npm run lint && jest --coverage"
+    "test": "npm run lint && jest --coverage",
+    "build:browser": "npm run build && browserify browser/index.js -o dist/bundle.js",
+    "clean:browser": "rm -rf dist"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,7 @@
     "@types/serve-handler": "^6.1.0",
     "@types/websocket": "1.0.1",
     "@types/ws": "^7.2.0",
+    "browserify": "^17.0.0",
     "jest": "^25.1.0",
     "minimist": ">=1.2.2",
     "serve-handler": "^6.1.3",

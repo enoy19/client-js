@@ -8,17 +8,20 @@ type CredentialsOption = "omit" | "same-origin" | "include"
 interface HTTPTransportOptions {
   credentials?: CredentialsOption
   headers?: Record<string, string>
+  fetchFunction?: typeof fetch
 }
 
 class HTTPTransport extends Transport {
   public uri: string;
   private readonly credentials?: CredentialsOption;
-  private readonly headers: Headers
+  private readonly headers: Headers;
+  private readonly fetchFunction?: typeof fetch;
   constructor(uri: string, options?: HTTPTransportOptions) {
     super();
     this.uri = uri;
     this.credentials = options && options.credentials;
-    this.headers = HTTPTransport.setupHeaders(options && options.headers)
+    this.headers = HTTPTransport.setupHeaders(options && options.headers);
+    this.fetchFunction = options?.fetchFunction;
   }
   public connect(): Promise<any> {
     return Promise.resolve();
@@ -29,7 +32,8 @@ class HTTPTransport extends Transport {
     const notifications = getNotifications(data);
     const batch = getBatchRequests(data);
     try {
-      const result = await fetch(this.uri, {
+      const effectiveFetch = this.fetchFunction || fetch;
+      const result = await effectiveFetch(this.uri, {
         method: "POST",
         headers: this.headers,
         body: JSON.stringify(this.parseData(data)),
